@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Jev Review",
+  "version": "0.1.0",
+  "description": "Jev grades your Gmail replies as you write them, and lists the questions you haven't answered yet.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://api.typesafe.ai/*"],
+  "background": {"service_worker": "background.js", "type": "module"},
+  "content_scripts": [{"matches": ["https://mail.google.com/*"], "js": ["content.js"], "run_at": "document_idle"}],
+  "options_page": "options.html",
+  "action": {"default_title": "Jev Review options"},
+  "icons": {"16": "icons/16.png", "48": "icons/48.png", "128": "icons/128.png"}
+}

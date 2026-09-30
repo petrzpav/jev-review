@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- A Gmail-like thread with an inline reply, for eyeballing content.js without Gmail:
+     chromium --headless --screenshot --virtual-time-budget=8000 test/harness.html -->
+<meta charset="utf-8">
+<style>body { font: 14px sans-serif; margin: 0; } [role=main] { margin-left: 300px; padding: 20px; width: 640px; }
+  .narrow [role=main] { margin-left: 20px; width: calc(100% - 80px); }
+  .M9 { border: 1px solid #ccc; padding: 10px; min-height: 200px; } h2 { margin: 0 0 12px; }</style>
+<div role="main">
+  <h2 class="hP">Invoice</h2>
+  <div class="a3s"><div>Hi Pavel,</div><div><br></div><div>can you send the invoice by Friday? Also, is the meeting on Tuesday still on?</div>
+    <div class="gmail_quote"><blockquote>Old quoted stuff?</blockquote></div><div>Thanks, Jonas</div></div>
+  <div class="M9"><input type="hidden" name="subject" value="Re: Invoice">
+    <div contenteditable="true" g_editable="true"><div>Hi Jonas,</div><div><br></div><div>I'll send the invoice tomorrow morning.</div><div>Best, Pavel</div></div>
+  </div>
+</div>
+<script>
+const sent = [];
+window.chrome = {
+  runtime: {sendMessage: async msg => {
+    sent.push(msg);
+    if (msg.type === "settings") return {auto: true, criteria: ["clear", "tone", "length", "next step", "language"].map(name => ({name}))};
+    return {result: {grades: {clear: {choice: "good", score: .82}, tone: {choice: "good", score: .95}, length: {choice: "ok", score: .53},
+      "next step": {choice: "ok", score: .6}, language: {choice: "good", score: .99}}, asked: 3, missed: ["Also, is the meeting on Tuesday still on?",
+      "https://docs.google.com/document/d/1Ey3aBcDeFgHiJkLmNoPqRsTuVwXyZ0123456789/edit?tab=t.0 can you check this one before Friday, and tell me what you think?"]}};
+  }},
+  storage: {onChanged: {addListener() {}}},
+};
+document.documentElement.className = location.search.includes("narrow") ? "narrow" : "";
+if (location.search.includes("open")) setTimeout(() => document.querySelector("div[style], body > div:last-child").shadowRoot?.querySelector(".card").click(), 5500);
+setTimeout(() => {
+  const r = sent.find(m => m.type === "review");
+  document.title = r ? "REVIEW " + JSON.stringify(r) : "NO REVIEW";
+}, 6000);
+</script>
+<script src="../content.js"></script>
